@@ -18,7 +18,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   onViewChange,
   children,
 }) => {
-  const isDark = data?.pocaLuz === true;
+  const isDark = data?.luz !== undefined && data.luz !== 0;
 
   return (
     <div className={`app-shell ${isDark ? "theme-dark" : "theme-light"}`}>

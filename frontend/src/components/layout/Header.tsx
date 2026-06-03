@@ -7,9 +7,10 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ data, connectionStatus }) => {
-  const themeMessage = data?.pocaLuz
-    ? "Modo nocturno activado por baja luz"
-    : "Modo claro activado por luz suficiente";
+  const isDark = data?.luz !== undefined && data.luz !== 0;
+  const themeMessage = isDark
+    ? "Modo nocturno activado por lectura de luz"
+    : "Modo claro activado por lectura de luz en cero";
 
   return (
     <header className="header">
@@ -18,14 +19,10 @@ export const Header: React.FC<HeaderProps> = ({ data, connectionStatus }) => {
         <h1>Centro de control</h1>
       </div>
       <div className="header-status">
-        <span className={`status-pill ${connectionStatus.backendConnected ? "ok" : "bad"}`}>
+        <span
+          className={`status-pill ${connectionStatus.backendConnected ? "ok" : "bad"}`}
+        >
           Backend {connectionStatus.backendConnected ? "online" : "offline"}
-        </span>
-        <span className={`status-pill ${connectionStatus.serialConnected ? "ok" : "warn"}`}>
-          Arduino {connectionStatus.serialConnected ? "conectado" : "sin conexion"}
-        </span>
-        <span className={`status-pill ${connectionStatus.database?.connected ? "ok" : "warn"}`}>
-          DB {connectionStatus.database?.connected ? "activa" : "no configurada"}
         </span>
         <span className="theme-pill">{themeMessage}</span>
       </div>
