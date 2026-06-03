@@ -8,6 +8,30 @@ void PS5ControllerCustom::begin(const char* mac) {
     ps5.begin(mac);
 }
 
+bool PS5ControllerCustom::isGrabando() {
+    return _modo == GRABANDO;
+}
+
+bool PS5ControllerCustom::isReproduciendo() {
+    return _modo == REPRODUCIENDO;
+}
+
+int PS5ControllerCustom::getFramesGrabados() {
+    return _totalFrames;
+}
+
+String PS5ControllerCustom::getModoTexto() {
+    switch (_modo) {
+        case GRABANDO:
+            return "GRABANDO";
+        case REPRODUCIENDO:
+            return "REPRODUCIENDO";
+        case NORMAL:
+        default:
+            return "NORMAL";
+    }
+}
+
 
 //  ACTUALIZAR 
 

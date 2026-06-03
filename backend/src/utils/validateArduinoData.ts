@@ -11,7 +11,7 @@ export function validateArduinoData(data: unknown): data is ArduinoData {
   const obj = data as Record<string, unknown>;
 
   // Validar campos obligatorios y sus tipos
-  return (
+  const hasRequiredFields =
     typeof obj.distancia === "number" &&
     typeof obj.gas === "number" &&
     typeof obj.luz === "number" &&
@@ -20,8 +20,38 @@ export function validateArduinoData(data: unknown): data is ArduinoData {
     typeof obj.gasDetectado === "boolean" &&
     typeof obj.ventilador === "boolean" &&
     typeof obj.buzzer === "boolean" &&
-    typeof obj.obstaculo === "boolean"
-  );
+    typeof obj.obstaculo === "boolean";
+
+  if (!hasRequiredFields) return false;
+
+  if (
+    obj.ps5Mode !== undefined &&
+    obj.ps5Mode !== "NORMAL" &&
+    obj.ps5Mode !== "GRABANDO" &&
+    obj.ps5Mode !== "REPRODUCIENDO"
+  ) {
+    return false;
+  }
+
+  if (obj.grabando !== undefined && typeof obj.grabando !== "boolean") {
+    return false;
+  }
+
+  if (
+    obj.reproduciendo !== undefined &&
+    typeof obj.reproduciendo !== "boolean"
+  ) {
+    return false;
+  }
+
+  if (
+    obj.framesGrabados !== undefined &&
+    typeof obj.framesGrabados !== "number"
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 /**

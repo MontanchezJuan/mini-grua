@@ -1,6 +1,11 @@
 import { Server as HTTPServer } from "http";
 import { Server as IOServer, Socket } from "socket.io";
-import { ArduinoData, ArduinoCommand } from "../types/arduino";
+import {
+  ArduinoData,
+  ArduinoCommand,
+  DatabaseHealth,
+  EventRecord,
+} from "../types/arduino";
 
 type CommandCallback = (command: ArduinoCommand) => Promise<boolean>;
 
@@ -83,6 +88,22 @@ export class SocketService {
       port: port || "unknown",
       timestamp: Date.now(),
     });
+  }
+
+  emitEventStarted(event: EventRecord): void {
+    this.io.emit("event:started", event);
+  }
+
+  emitEventUpdated(event: EventRecord): void {
+    this.io.emit("event:updated", event);
+  }
+
+  emitEventClosed(event: EventRecord): void {
+    this.io.emit("event:closed", event);
+  }
+
+  emitDatabaseStatus(status: DatabaseHealth): void {
+    this.io.emit("database:status", status);
   }
 
   /**
