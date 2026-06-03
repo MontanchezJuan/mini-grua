@@ -4,6 +4,8 @@ import {
   ArduinoData,
   ConnectionStatus,
   ArduinoCommand,
+  DatabaseHealth,
+  EventRecord,
 } from "../types/arduino";
 
 /**
@@ -11,6 +13,7 @@ import {
  */
 export function useArduinoSocket() {
   const [data, setData] = useState<ArduinoData | null>(null);
+  const [events, setEvents] = useState<EventRecord[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
     backendConnected: false,
     serialConnected: false,
@@ -49,7 +52,10 @@ export function useArduinoSocket() {
       "arduino:data",
       (receivedData: ArduinoData & { receivedAt: number }) => {
         console.log("[Socket] Datos recibidos:", receivedData);
-        setData(receivedData);
+        setData({
+          ...receivedData,
+          receivedAt: new Date(receivedData.receivedAt).toISOString(),
+        });
         setConnectionStatus((prev) => ({
           ...prev,
           lastDataTime: receivedData.receivedAt,
@@ -69,6 +75,28 @@ export function useArduinoSocket() {
       },
     );
 
+    newSocket.on("database:status", (status: DatabaseHealth) => {
+      setConnectionStatus((prev) => ({ ...prev, database: status }));
+    });
+
+    newSocket.on("event:started", (event: EventRecord) => {
+      setEvents((prev) => [event, ...prev.filter((item) => item.id !== event.id)].slice(0, 20));
+    });
+
+    newSocket.on("event:updated", (event: EventRecord) => {
+      setEvents((prev) =>
+        prev.map((item) => (item.id === event.id ? event : item)),
+      );
+    });
+
+    newSocket.on("event:closed", (event: EventRecord) => {
+      setEvents((prev) => {
+        const exists = prev.some((item) => item.id === event.id);
+        if (!exists) return [event, ...prev].slice(0, 20);
+        return prev.map((item) => (item.id === event.id ? event : item));
+      });
+    });
+
     // Errores de conexión
     newSocket.on("connect_error", (error) => {
       console.error("[Socket] Error de conexión:", error);
@@ -80,6 +108,18 @@ export function useArduinoSocket() {
     return () => {
       newSocket.disconnect();
     };
+  }, []);
+
+  const setSimulatedData = useCallback((nextData: ArduinoData) => {
+    setData({
+      ...nextData,
+      receivedAt: new Date().toISOString(),
+      timestamp: Date.now(),
+    });
+    setConnectionStatus((prev) => ({
+      ...prev,
+      lastDataTime: Date.now(),
+    }));
   }, []);
 
   /**
@@ -119,7 +159,9 @@ export function useArduinoSocket() {
 
   return {
     data,
+    events,
     connectionStatus,
     sendCommand,
+    setSimulatedData,
   };
 }

@@ -24,6 +24,10 @@ public:
                     bool  estadoVentilador,
                     ServoController& servos,
                     RelayController& rele);
+    bool isGrabando();
+    bool isReproduciendo();
+    int getFramesGrabados();
+    String getModoTexto();
 
 private:
     // ── Anti-obstáculo ───────────────────────────────

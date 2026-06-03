@@ -11,7 +11,44 @@ export interface ArduinoData {
   ventilador: boolean;
   buzzer: boolean;
   obstaculo: boolean;
+  servoBaseDir?: number;
   timestamp?: number;
+  receivedAt?: string;
+  ps5Mode?: "NORMAL" | "GRABANDO" | "REPRODUCIENDO";
+  grabando?: boolean;
+  reproduciendo?: boolean;
+  framesGrabados?: number;
+}
+
+export type EventType = "proximity" | "gas" | "light" | "ps5_recording";
+export type EventStatus = "active" | "closed";
+export type EventSource = "arduino" | "web-test" | "ps5";
+
+export interface EventRecord {
+  id?: string;
+  type: EventType;
+  status: EventStatus;
+  source: EventSource;
+  startedAt: string;
+  endedAt?: string;
+  durationMs?: number;
+  durationSeconds?: number;
+  initialValue?: number;
+  finalValue?: number;
+  minValue?: number;
+  maxValue?: number;
+  avgValue?: number;
+  samplesCount?: number;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DatabaseHealth {
+  enabled: boolean;
+  configured: boolean;
+  connected: boolean;
+  message: string;
 }
 
 /**
@@ -21,6 +58,7 @@ export interface ConnectionStatus {
   backendConnected: boolean;
   serialConnected: boolean;
   lastDataTime: number | null;
+  database?: DatabaseHealth;
 }
 
 /**

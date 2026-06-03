@@ -191,6 +191,19 @@ void enviarEstadoJSON(float distancia, int valorGas, bool obstaculo, bool gasAlt
     Serial.print(",\"buzzerManual\":");
     Serial.print(buzzerManual ? "true" : "false");
 
+    Serial.print(",\"ps5Mode\":\"");
+    Serial.print(controlPS5.getModoTexto());
+    Serial.print("\"");
+
+    Serial.print(",\"grabando\":");
+    Serial.print(controlPS5.isGrabando() ? "true" : "false");
+
+    Serial.print(",\"reproduciendo\":");
+    Serial.print(controlPS5.isReproduciendo() ? "true" : "false");
+
+    Serial.print(",\"framesGrabados\":");
+    Serial.print(controlPS5.getFramesGrabados());
+
     Serial.print(",\"timestamp\":");
     Serial.print(millis());
 
